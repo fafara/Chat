@@ -73,14 +73,10 @@ public class ImageTitleActivity extends AppCompatActivity implements ChooserDial
                     final ProgressDialog mProgress=new ProgressDialog(ImageTitleActivity.this);
                     mProgress.setTitle("Uploading...");
                     mProgress.setMessage("Please wait while your image is being uploaded.");
-                    mProgress.setCanceledOnTouchOutside(true);
+                    mProgress.setCanceledOnTouchOutside(false);
                     mProgress.show();
                     try {
-                        activityCaller();
-                        Bitmap compressedFile = BitmapFactory.decodeFile(filePath);
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        compressedFile.compress(Bitmap.CompressFormat.JPEG, 60, baos);
-                        byte[] arr = baos.toByteArray();
+
 
                         final Messages message=new Messages();
                         final String uid= FirebaseAuth.getInstance().getCurrentUser().getUid().toString();
@@ -91,10 +87,11 @@ public class ImageTitleActivity extends AppCompatActivity implements ChooserDial
                         categ=message.getHashTag();
                         final long timestamp=System.currentTimeMillis();
                         final StorageReference mStorageRef = FirebaseStorage.getInstance().getReference().child("Uploads").child("A"+timestamp+".jpg");
-
+                        File file=new File(filePath);
+                        Uri fp=Uri.fromFile(file);
 
                         //Upload the image
-                        UploadTask uploadTask = mStorageRef.putBytes(arr);
+                        UploadTask uploadTask = mStorageRef.putFile(fp);
                         mSendBtn.setOnClickListener(null);
                         uploadTask.addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -114,6 +111,7 @@ public class ImageTitleActivity extends AppCompatActivity implements ChooserDial
                                     Toast.makeText(ImageTitleActivity.this, "Failed", Toast.LENGTH_SHORT).show();
                                     throw task.getException();
                                 }
+                                activityCaller();
                                 return mStorageRef.getDownloadUrl();
                             }
                         }).addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -147,6 +145,7 @@ public class ImageTitleActivity extends AppCompatActivity implements ChooserDial
                                         ImageTitleActivity.this.timestamp=timestamp;
                                         //startActivity(new Intent(ImageTitleActivity.this,AuthNotice.class));
                                     }
+                                    finish();
 
                                 }
                                 else
@@ -160,11 +159,6 @@ public class ImageTitleActivity extends AppCompatActivity implements ChooserDial
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(ImageTitleActivity.this, "There was an error uploading the image!", Toast.LENGTH_SHORT).show();
-                    }finally {
-                        if(!context.equals("NoticeComposerActivity"))
-                        {
-                            finish();
-                        }
                     }
                 }
                 else
@@ -188,7 +182,7 @@ public class ImageTitleActivity extends AppCompatActivity implements ChooserDial
         }
         else if(context.equals("ChatFragment"))
         {
-            //
+            startActivity(new Intent(ImageTitleActivity.this,OptionsActivity.class));
         }
     }
 

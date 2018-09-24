@@ -85,7 +85,7 @@ public class UploadHelper {
             e.printStackTrace();
         }
         if(type.equals(TEMP_PHOTO_JPG)) {
-            intent.putExtra("path", mFileTemp.getPath());
+            intent.putExtra("path", mFileTemp.getAbsolutePath());
             mContext.startActivity(intent);
         }
         else
@@ -137,11 +137,6 @@ public class UploadHelper {
 
         }
     }
-
-    private void putAtAuthRef() {
-
-    }
-
     private void copyStream(InputStream input, OutputStream output) throws IOException{
         byte[] buffer = new byte[1024];
         int bytesRead;
@@ -158,6 +153,7 @@ public class UploadHelper {
         map.put("text", message.getText());
         map.put("from", uid);
         map.put("type",type);
+        map.put("sender",(ChatApp.user.getCR().equals("true")||ChatApp.user.getCR().equals("false"))?"Student":ChatApp.user.getCR());
         map.put("link",uri.toString());
         mRef.child(ChatApp.rollInfo).child("CR").child("messages").child(receiver).child(key).setValue(map);
     }
@@ -175,6 +171,7 @@ public class UploadHelper {
             map.put("timestamp", timestamp);
             map.put("text", message.getText());
             map.put("from", uid);
+            map.put("sender",(ChatApp.user.getCR().equals("true")||ChatApp.user.getCR().equals("false"))?"Student":ChatApp.user.getCR());
             map.put("type",type);
             map.put("link", uri.toString());
 
@@ -190,10 +187,6 @@ public class UploadHelper {
         {
             Toast.makeText(mContext, "Task Successful!", Toast.LENGTH_LONG).show();
         }
-
-    }
-    public void passer()
-    {
 
     }
 }
